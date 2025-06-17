@@ -117,4 +117,90 @@ plt.show()
 | Impulse Response $h$ | Output of the system when input is the 2D impulse            |
 | System Output        | $y[m,n] = f[m,n] * h[m,n]$ — 2D convolution                  |
 
+In image processing, **horizontal**, **vertical**, and **gradient** filters are used for **edge detection**, **feature extraction**, and **enhancing details**. These filters work by convolving a kernel (matrix) with the image.
+
+---
+
+### 1. **Horizontal Filter**
+
+Detects **horizontal edges** — i.e., changes in intensity **along rows** (left to right).
+
+**Example Kernel (Sobel Horizontal):**
+
+```text
+[-1  -2  -1]
+[ 0   0   0]
+[ 1   2   1]
+```
+
+This emphasizes differences in pixel values **top to bottom**.
+
+---
+
+### 2. **Vertical Filter**
+
+Detects **vertical edges** — i.e., changes in intensity **along columns** (top to bottom).
+
+**Example Kernel (Sobel Vertical):**
+
+```text
+[-1   0   1]
+[-2   0   2]
+[-1   0   1]
+```
+
+This emphasizes differences **left to right**.
+
+---
+
+### 3. **Gradient Filter**
+
+Combines both horizontal and vertical filters to detect the **overall edge strength and direction**.
+
+**Gradient Magnitude** is typically computed as:
+
+```python
+G = sqrt(Gx² + Gy²)
+```
+
+Or approximated as:
+
+```python
+G ≈ |Gx| + |Gy|
+```
+
+Where:
+
+* `Gx` = result of horizontal filter
+* `Gy` = result of vertical filter
+
+---
+
+### Example with OpenCV (Python)
+
+```python
+import cv2
+import numpy as np
+from matplotlib import pyplot as plt
+
+# Load grayscale image
+img = cv2.imread('image.jpg', cv2.IMREAD_GRAYSCALE)
+
+# Apply Sobel filters
+sobel_x = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=3)  # Horizontal
+sobel_y = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=3)  # Vertical
+
+# Gradient magnitude
+gradient = cv2.magnitude(sobel_x, sobel_y)
+
+# Display
+plt.subplot(1, 3, 1), plt.imshow(sobel_x, cmap='gray'), plt.title('Horizontal')
+plt.subplot(1, 3, 2), plt.imshow(sobel_y, cmap='gray'), plt.title('Vertical')
+plt.subplot(1, 3, 3), plt.imshow(gradient, cmap='gray'), plt.title('Gradient')
+plt.show()
+```
+
+---
+
+
 
