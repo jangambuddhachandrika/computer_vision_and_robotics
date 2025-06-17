@@ -201,6 +201,122 @@ plt.show()
 ```
 
 ---
+Yes — **horizontal (x) and vertical (y) filters are separable** in many cases, especially with common kernels like **Gaussian** and **Sobel**. A **separable filter** means a 2D filter can be expressed as the **outer product of two 1D filters**, significantly reducing computational cost.
+
+---
+
+### 🔹 What is a Separable Filter?
+
+A 2D filter $K(x, y)$ is **separable** if:
+
+$$
+K(x, y) = f(x) \cdot g(y)
+$$
+
+So instead of convolving a 2D kernel, you do:
+
+1. Convolve image with $f(x)$ along **rows**
+2. Then convolve result with $g(y)$ along **columns**
+
+This reduces:
+
+* **Computation from O(n²)** to **O(2n)** per pixel for an $n \times n$ kernel
+
+---
+
+### 🔹 Example: Gaussian Filter
+
+A 2D **Gaussian kernel** is separable:
+
+$$
+G(x, y) = G_x(x) \cdot G_y(y)
+$$
+
+#### 1D Gaussian (e.g., for σ=1):
+
+```text
+Gx = [1 2 1]
+Gy = [1
+      2
+      1]
+```
+
+So the 2D kernel:
+
+```text
+[1 2 1]ᵀ * [1 2 1] = 
+[
+ [1 2 1]
+ [2 4 2]
+ [1 2 1]
+]
+```
+
+You can apply horizontal then vertical 1D convolutions instead of a full 3x3 2D convolution.
+
+---
+
+### 🔹 Example: Sobel Filter (Separable!)
+
+Sobel X:
+
+$$
+S_x = \begin{bmatrix}
+-1 & 0 & 1 \\
+-2 & 0 & 2 \\
+-1 & 0 & 1
+\end{bmatrix}
+\quad = 
+\begin{bmatrix}
+1 \\
+2 \\
+1
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+-1 & 0 & 1
+\end{bmatrix}
+$$
+
+So you can do:
+
+* Horizontal convolution with `[-1 0 1]`
+* Then vertical convolution with `[1 2 1]ᵗ`
+
+---
+
+### 🔹 OpenCV Example with Separable Gaussian
+
+```python
+import cv2
+import numpy as np
+
+img = cv2.imread('image.jpg', 0)
+
+# Use 1D Gaussian
+kernel_1d = cv2.getGaussianKernel(ksize=5, sigma=1)
+
+# Apply horizontal then vertical
+blur_horizontal = cv2.sepFilter2D(img, -1, kernel_1d, np.array([[1]]))  # Horizontal
+blur = cv2.sepFilter2D(blur_horizontal, -1, np.array([[1]]), kernel_1d)  # Vertical
+```
+
+Or simply:
+
+```python
+blur = cv2.sepFilter2D(img, -1, kernel_1d, kernel_1d)
+```
+
+---
+
+### ✅ Benefits of Separable Filters
+
+* Faster computation
+* Lower memory usage
+* Mathematically equivalent to 2D convolution for separable kernels
+
+---
+
 
 
 
